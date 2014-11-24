@@ -11,9 +11,10 @@ class HumanPlayer(Player.Player):
     '''
 
 
-    def __init__(self, params):
+    def __init__(self):
         '''
         Constructor
         '''
-        def request_move(self, board):
+    
+    def request_move(self, board):
             return 0, 0 #GUI will get move
