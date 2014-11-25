@@ -2,6 +2,7 @@
 Created on Nov 25, 2014
 
 @author: Michael Pritchard
+@author: Eric Shaw
 
 """
 
