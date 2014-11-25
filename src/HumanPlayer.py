@@ -1,13 +1,14 @@
 '''
 Created on Nov 22, 2014
 
-@author: Eric
+@author: Eric Shaw
+@author: Michael Pritchard
 '''
 import Player as Player
 
 class HumanPlayer(Player.Player):
     '''
-    classdocs
+    This class represents a human player of the game.
     '''
 
 
@@ -16,5 +17,3 @@ class HumanPlayer(Player.Player):
         Constructor
         '''
     
-    def request_move(self, board):
-            return 0, 0 #GUI will get move

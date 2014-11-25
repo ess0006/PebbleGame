@@ -11,6 +11,9 @@ import AIPlayer as AIPlayer
 import Game as Game
 
 class Main(tk.Tk):
+    '''
+    Entry point.  This class builds each view.
+    '''
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, None, None)
 
@@ -34,18 +37,38 @@ class Main(tk.Tk):
         self.show_frame(Menu)
         
     def show_frame(self, c):
-        '''Show a frame for the given class'''
+        '''
+        Show a frame for the given class.
+        @param c: The index of the frame to show.
+        '''
         frame = self.frames[c]
         frame.tkraise()
         
     def show_frame_game(self, c, game_type, n, k):
-        '''Show a frame for the given class'''
+        '''
+        Show a frame for the given class.
+        @param c: The index of the frame to show.
+        @param game_type: An int representing the types of players
+                          0 - Human vs Human
+                          1 - AI vs AI
+                          2 - Human vs AI
+        @param n: The number of columns per row.
+        @param k: The number of pebbles per square.  
+        '''
         frame = self.frames[c]
         frame.set_game_type(game_type, n, k)
         frame.tkraise()
  
 class Menu(tk.Frame):     
+    '''
+    The menu view.
+    '''
     def __init__(self, parent, controller):
+        '''
+        Constructor
+        @param parent: The parent view.
+        @param controller: The controller for the view. 
+        '''
         tk.Frame.__init__(self, parent)
         
         self.b1 = Button(root, text="2 Human", command=lambda: controller.show_frame_game(GamePage, 0, int(self.n_text_field.get()), int(self.k_text_field.get())))
@@ -67,10 +90,27 @@ class Menu(tk.Frame):
 
 
 class GamePage(tk.Frame):
+    '''
+    The grid of squares.
+    '''
     def __init__(self, parent, controller):
+        '''
+        Constructor
+        @param parent: The parent view.
+        @param controller: The controller for the view. 
+        '''
         tk.Frame.__init__(self, parent)
     
     def set_game_type(self, game_type, n, k):
+        '''
+        Sets the game type.
+        @param game_type: An int representing the types of players
+                          0 - Human vs Human
+                          1 - AI vs AI
+                          2 - Human vs AI
+        @param n: The number of columns per row.
+        @param k: The number of pebbles per square.  
+        '''
         self.grid(row=4, column=k)
         if game_type == 0:
             self.game = Game.Game(HumanPlayer.HumanPlayer(), HumanPlayer.HumanPlayer(), n, k)
@@ -81,7 +121,9 @@ class GamePage(tk.Frame):
         self.build_board()
         
     def build_board(self):
-        
+        '''
+        Builds and displays the board GUI.
+        '''
         state = self.game.get_state()
         self.buttons = []
         self.buttons.append([])
@@ -96,7 +138,8 @@ class GamePage(tk.Frame):
                 
         if self.game.has_ai():
             self.arrow = tk.Button(self, text=">", command=lambda: self.ai_move())
-            self.arrow.grid(row=3,columnspan=self.game.get_n())
+            if self.game.is_next_ai():
+                self.arrow.grid(row=3,columnspan=self.game.get_n())
             
         self.turn_label = tk.Label(self, text="Turn:")
         self.turn_label.grid(row=4,columnspan=self.game.get_n())
@@ -105,17 +148,32 @@ class GamePage(tk.Frame):
         
             
     def move(self, i, j):
+        '''
+        Submits a move to the Game instance.
+        @param i: The i coordinate.
+        @param j: The j coordinate. 
+        '''
         if isinstance(self.game.next_to_move(), HumanPlayer.HumanPlayer):
             if(self.game.valid_move(i,j)):
                 self.game.move(i, j)
             self.update_gui()
+            if self.game.is_next_ai():
+                self.arrow.grid(row=3,columnspan=self.game.get_n())
     
     def ai_move(self):
+        '''
+        Submits a move for the AI player.
+        '''
         if isinstance(self.game.next_to_move(), AIPlayer.AIPlayer):
             self.game.ai_move()
             self.update_gui()
+            if not self.game.is_next_ai():
+                self.arrow.grid_forget()
     
     def update_gui(self):
+        '''
+        Updates the board GUI after a move.
+        '''
         state = self.game.get_state()
         for i in range(len(state)):
             for j in range(len(state[i])):

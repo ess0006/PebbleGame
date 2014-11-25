@@ -1,7 +1,8 @@
 '''
 Created on Nov 22, 2014
 
-@author: Eric
+@author: Eric Shaw
+@author: Michael Pritchard
 '''
 
 class Algorithm(object):
