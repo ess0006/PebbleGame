@@ -13,6 +13,7 @@ import Game as Game
 class Main(tk.Tk):
     '''
     Entry point.  This class builds each view.
+    Adapted from http://stackoverflow.com/questions/7546050/python-tkinter-changing-the-window-basics
     '''
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, None, None)
@@ -63,12 +64,26 @@ class Menu(tk.Frame):
     '''
     The menu view.
     '''
+    #creating more constants than should be necessary because radio buttons will group if they have like values
+    #These are static - no support for multiple instances of Menu
+    STEP = 0
+    RUN = 1
+    run_or_step = STEP
+    WEIGHTED_H1 = 2
+    WEIGHTLESS_H1 = 3
+    h1 = WEIGHTED_H1
+    WEIGHTED_H2 = 4
+    WEIGHTLESS_H2 = 5
+    h2 = WEIGHTED_H2
+        
     def __init__(self, parent, controller):
         '''
         Constructor
         @param parent: The parent view.
         @param controller: The controller for the view. 
         '''
+        
+        
         tk.Frame.__init__(self, parent)
         
         self.b1 = Button(root, text="2 Human", command=lambda: controller.show_frame_game(GamePage, 0, int(self.n_text_field.get()), int(self.k_text_field.get())))
@@ -76,6 +91,8 @@ class Menu(tk.Frame):
         self.b2 = Button(root, text="2 AI", command=lambda: controller.show_frame_game(GamePage, 1, int(self.n_text_field.get()), int(self.k_text_field.get())))
         self.b2.pack()
         self.b3 = Button(root, text="1 Human, 1 AI", command=lambda: controller.show_frame_game(GamePage, 2, int(self.n_text_field.get()), int(self.k_text_field.get())))
+        self.b3.pack()
+        self.b3 = Button(root, text="1 AI, 1 Human", command=lambda: controller.show_frame_game(GamePage, 3, int(self.n_text_field.get()), int(self.k_text_field.get())))
         self.b3.pack()
         self.n_label = Label(root, text="Num squares per side:")
         self.n_label.pack()
@@ -85,6 +102,24 @@ class Menu(tk.Frame):
         self.n_label.pack()
         self.k_text_field = Entry(root)
         self.k_text_field.pack()
+        
+        self.run_or_step_label = Label(root, text="Step or Run to end (AI only):")
+        self.run_or_step_label.pack()
+        Menu.run_or_step = IntVar(master = root)
+        Radiobutton(root, text="Step", variable=Menu.run_or_step, value=Menu.STEP).pack(anchor=W)
+        Radiobutton(root, text="Run", variable=Menu.run_or_step, value=Menu.RUN).pack(anchor=W)
+        
+        self.heuristic1_label = Label(root, text="Player 1 Heuristic (AI only):")
+        self.heuristic1_label.pack()
+        Menu.h1 = IntVar(master = root)
+        Radiobutton(root, text="Weighted", variable=Menu.h1, value=Menu.WEIGHTED_H1).pack(anchor=W)
+        Radiobutton(root, text="Weightless", variable=Menu.h1, value=Menu.WEIGHTLESS_H1).pack(anchor=W)
+        
+        self.heuristic2_label = Label(root, text="Player 2 Heuristic (AI only):")
+        self.heuristic2_label.pack()
+        Menu.h2 = IntVar(master = root)
+        Radiobutton(root, text="Weighted", variable=Menu.h2, value=Menu.WEIGHTED_H2).pack(anchor=W)
+        Radiobutton(root, text="Weightless", variable=Menu.h2, value=Menu.WEIGHTLESS_H2).pack(anchor=W)
         
         
 
@@ -107,7 +142,8 @@ class GamePage(tk.Frame):
         @param game_type: An int representing the types of players
                           0 - Human vs Human
                           1 - AI vs AI
-                          2 - Human vs AI
+                          2 - Human vs AI (Human first)
+                          3 - AI vs Human (AI first)
         @param n: The number of columns per row.
         @param k: The number of pebbles per square.  
         '''
@@ -115,9 +151,11 @@ class GamePage(tk.Frame):
         if game_type == 0:
             self.game = Game.Game(HumanPlayer.HumanPlayer(), HumanPlayer.HumanPlayer(), n, k)
         elif game_type == 1:
-            self.game = Game.Game(AIPlayer.AIPlayer(), AIPlayer.AIPlayer(), n, k)
+            self.game = Game.Game(AIPlayer.AIPlayer(Menu.h1.get()), AIPlayer.AIPlayer(Menu.h2.get()), n, k)
+        elif game_type == 2:
+            self.game = Game.Game(HumanPlayer.HumanPlayer(), AIPlayer.AIPlayer(Menu.h2.get()), n, k)
         else:
-            self.game = Game.Game(HumanPlayer.HumanPlayer(), AIPlayer.AIPlayer(), n, k)
+            self.game = Game.Game(AIPlayer.AIPlayer(Menu.h1.get()), HumanPlayer.HumanPlayer(), n, k) 
         self.build_board()
         
     def build_board(self):
@@ -139,12 +177,17 @@ class GamePage(tk.Frame):
         if self.game.has_ai():
             self.arrow = tk.Button(self, text=">", command=lambda: self.ai_move())
             if self.game.is_next_ai():
-                self.arrow.grid(row=3,columnspan=self.game.get_n())
+                if Menu.run_or_step.get() == Menu.STEP:
+                    self.arrow.grid(row=3,columnspan=self.game.get_n())
             
         self.turn_label = tk.Label(self, text="Turn:")
         self.turn_label.grid(row=4,columnspan=self.game.get_n())
         self.player_label = tk.Label(self, text="Player 1")
         self.player_label.grid(row=5,columnspan=self.game.get_n())
+        
+        if self.game.is_next_ai():
+            if Menu.run_or_step.get() == Menu.RUN:
+                    self.ai_move()
         
             
     def move(self, i, j):
@@ -158,7 +201,10 @@ class GamePage(tk.Frame):
                 self.game.move(i, j)
             self.update_gui()
             if self.game.is_next_ai():
-                self.arrow.grid(row=3,columnspan=self.game.get_n())
+                if Menu.run_or_step.get() == Menu.STEP:
+                    self.arrow.grid(row=3,columnspan=self.game.get_n())
+                else:
+                    self.ai_move()
     
     def ai_move(self):
         '''
@@ -167,9 +213,12 @@ class GamePage(tk.Frame):
         if isinstance(self.game.next_to_move(), AIPlayer.AIPlayer):
             self.game.ai_move()
             self.update_gui()
-            if not self.game.is_next_ai():
+            if self.game.is_next_ai():
+                if Menu.run_or_step.get() == Menu.RUN:
+                    self.ai_move()
+            else:
                 self.arrow.grid_forget()
-    
+                
     def update_gui(self):
         '''
         Updates the board GUI after a move.

@@ -13,11 +13,11 @@ class AIPlayer(Player.Player):
     '''
     
 
-    def __init__(self):
+    def __init__(self, heuristic):
         '''
         Constructor
         '''
-        self.algorithm = Algorithm.Algorithm()
+        self.algorithm = Algorithm.Algorithm(heuristic)
     
     def request_move(self, board):
         '''
