@@ -13,18 +13,30 @@ class Heuristic(object):
 
     """
 
-    def __init__(self, rows=2, row_buckets=2):
+    def __init__(self, player_row=None, rows=2, row_buckets=2, tile_pebbles=2):
         """
         Constructor.
 
+        @param: player_row
         @param: rows
-        @param row_buckets
+        @param: row_buckets
+        @param: tile_pebbles
 
         """
+        self.validate_player_row(player_row)
         self.validate_rows(rows)
         self.validate_row_buckets(row_buckets)
+        self.validate_tile_pebbles(tile_pebbles)
+        self.player_row = player_row
         self.rows = rows
         self.row_buckets = row_buckets
+        self.tile_pebbles = tile_pebbles
+
+    def validate_player_row(self, player_row):
+        """
+        Performs type, value, and bounds checking on the player_row parameter.
+
+        """
 
     def validate_rows(self, rows):
         """ Performs type and value checking for the rows parameter """
@@ -36,13 +48,26 @@ class Heuristic(object):
                              "positive value greater than 1.")
 
     def validate_row_buckets(self, row_buckets):
-        """ Performs type and value checking for the row_buckets paramter. """
+        """ Performs type and value checking for the row_buckets parameter. """
         if not isinstance(row_buckets, int):
             raise TypeError("heuristic.Heuristic: expected <type \'int\'> " +
                             "for \'row_buckets\', found " + type(row_buckets))
         if row_buckets < 2:
             raise ValueError("heuristic.Heuristic: \'row_buckets\' must have" +
                              " a positive value greater than 1.")
+
+    def validate_tile_pebbles(self, tile_pebbles):
+        """
+        Performs type and value checking for the tile_pebbles parameter
+
+        """
+        if not isinstance(tile_pebbles, int):
+            raise TypeError("heuristic.Heuristic: expected <type \'int\'> " +
+                            "for \'tile_pebbles\', found "
+                            + type(tile_pebbles))
+        if tile_pebbles < 1:
+            raise ValueError("heuristic.Heuristic: \'tile_pebbles\' must have"
+                             + " a positive nonzero value.")
 
     def set_rows(self, rows):
         self.validate_rows(rows)
@@ -51,6 +76,10 @@ class Heuristic(object):
     def set_row_buckets(self, row_buckets):
         self.validate_row_buckets(row_buckets)
         self.row_buckets = row_buckets
+
+    def set_tile_pebbles(self, tile_pebbles):
+        self.validate_tile_pebbles(tile_pebbles)
+        self.tile_pebbles = tile_pebbles
 
     def evaluate_board_state(self, board_state):
         pass

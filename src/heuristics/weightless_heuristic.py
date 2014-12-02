@@ -19,6 +19,14 @@ class WeightlessHeuristic(Heuristic):
     pebbles per bucket.
 
     """
-
-    def __init__(self):
+    def __init__(self, rows=2, row_buckets=2, tile_pebbles=2):
         """ Constructor """
+        super(WeightlessHeuristic, self).__init__()
+        self.initial_value = calculate_initial_value()
+
+    def calculate_initial_value(self):
+        return self.row_buckets * self.tile_pebbles
+
+    def evalute_board_state(self, board_state):
+        current_value = 0
+        return current_value - self.initial_value

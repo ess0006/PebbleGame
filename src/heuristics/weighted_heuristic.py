@@ -32,5 +32,9 @@ class WeightedHeuristic(Heuristic):
 
     """
 
-    def __init__(self):
+    def __init__(self, rows=2, row_buckets=2, tile_pebbles=2):
         """ Constructor """
+        super(WeightedHeuristic, self).__init__()
+
+    def evalute_board_state(self, board_state):
+        pass
