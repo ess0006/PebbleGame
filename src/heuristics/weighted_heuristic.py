@@ -5,6 +5,7 @@ Created on Nov 25, 2014
 @author: Eric Shaw
 
 """
+from operator import mul
 
 from heuristics.heuristic import Heuristic
 
@@ -32,9 +33,21 @@ class WeightedHeuristic(Heuristic):
 
     """
 
-    def __init__(self, rows=2, row_buckets=2, tile_pebbles=2):
+    def __init__(self, player_row=None, rows=2, row_buckets=2, tile_pebbles=2):
         """ Constructor """
-        super(WeightedHeuristic, self).__init__()
+        super(WeightedHeuristic, self).__init__(player_row, rows,
+                                                row_buckets, tile_pebbles)
 
-    def evalute_board_state(self, board_state):
-        pass
+    def evaluate_board_state(self, board_state):
+        weights = [weight for weight in range(1, self.row_buckets + 1)]
+        tiles = [tile for tile in board_state[1]]
+        # The map operation performs an index-wise
+        # multiplication of the weights and tiles.
+        bot_value = sum(map(mul, tiles, weights))
+
+        weights = reversed(weights)
+        tiles = [tile for tile in board_state[0]]
+        top_value = sum(map(mul, tiles, weights))
+
+        return (top_value - bot_value if not self.player_row
+                else bot_value - top_value)

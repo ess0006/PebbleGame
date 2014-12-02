@@ -5,7 +5,7 @@ Created on Nov 22, 2014
 @author: Michael Pritchard
 '''
 import Player as Player
-import Algorithm as Algorithm
+import algorithm as Algorithm
 
 class AIPlayer(Player.Player):
     '''
@@ -17,7 +17,7 @@ class AIPlayer(Player.Player):
         '''
         Constructor
         '''
-        self.algorithm = Algorithm.Algorithm(heuristic)
+        self.algorithm = Algorithm.algorithm(heuristic)
     
     def request_move(self, board):
         '''

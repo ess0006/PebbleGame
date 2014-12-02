@@ -11,7 +11,7 @@ class Board(object):
     This class represents the 2 x k board.
     """
 
-    def __init__(self, n, k):
+    def __init__(self, n, k, state=None):
         """
         Constructor
         @param n: The number of columns in each of the 2 rows.
@@ -23,7 +23,7 @@ class Board(object):
             raise ValueError("Expected int param k for number of pebbles per square.")
         self.n = n
         self.k = k
-        self.state = self.get_initial_state()
+        self.state = state if state is not None else self.get_initial_state()
 
     def get_state(self):
         """
