@@ -90,7 +90,7 @@ class Game(object):
         @param i: The i coordinate for the move.
         @param j: The j coordinate for the move.  
         '''
-        self.board.select_square(i, j)
+        self.board = self.board.select_square(i, j)
         self.update_turn()
     
     def next_to_move(self):

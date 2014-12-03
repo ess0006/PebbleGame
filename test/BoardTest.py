@@ -32,7 +32,7 @@ class Test(unittest.TestCase):
         
     def test_select_square(self):
         board = Board.Board(3, 5)
-        board.select_square(0, 2)
+        newBoard = board.select_square(0, 2)
         expected1 = []
         expected1.append(6)
         expected1.append(6)
@@ -41,9 +41,20 @@ class Test(unittest.TestCase):
         expected2.append(6)
         expected2.append(6)
         expected2.append(6)
-        state = board.get_state()
-        self.assertSequenceEqual(state[0], expected1, "Error in select_square")
-        self.assertSequenceEqual(state[1], expected2, "Error in select_square")
+        state = newBoard.get_state()
+        self.assertEqual(state[0], expected1, "Error in select_square")
+        self.assertEqual(state[1], expected2, "Error in select_square")
+        
+    def test_str(self):
+        board = Board.Board(3, 5)
+        self.assertEqual('555555', str(board), "Error in __str__")
+        
+    def test_legal_moves(self):
+        board = Board.Board(3, 5)
+        moves = board.legal_moves(1)
+        self.assertEqual(moves[0], (0,0), "Error in select_square")
+        self.assertEqual(moves[1], (0,1), "Error in select_square")
+        self.assertEqual(moves[2], (0,2), "Error in select_square")
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -24,6 +24,7 @@ class Board(object):
         self.n = n
         self.k = k
         self.state = state if state is not None else self.get_initial_state()
+        pass
 
     def get_state(self):
         """
@@ -54,13 +55,19 @@ class Board(object):
         if not isinstance(i, int) or not isinstance(j, int):
             raise ValueError("Expected int params i and j, indices of the position on the board.")
         num = self.get_item(i, j)
-        self.state[i][j] = 0
-        i, j = self._rotate_cw(i, j)
+        newState = self.state_copy()
+        newBoard = Board(self.n, self.k, newState)
+        newBoard.set_item(i, j, 0)
+        i, j = newBoard._rotate_cw(i, j)
         while num > 0:
-            self.state[i][j] = self.state[i][j] + 1
+            newBoard.set_item(i, j, newBoard.get_item(i, j) + 1)
             num = num - 1
-            i, j = self._rotate_cw(i, j)
+            i, j = newBoard._rotate_cw(i, j)
+        return newBoard
 
+    def set_item(self, i, j, val):
+        self.state[i][j] = val
+    
     def _rotate_ccw(self, i, j):
         """
         Given coordinates, returns next coordinate in a counter-clockwise direction.
@@ -116,3 +123,35 @@ class Board(object):
         for x in array:
             total = total + x
         return total
+    
+    def legal_moves(self, turn):
+        moves = []
+        i = 0
+        if(turn == 1):
+            i = 0
+        else:
+            i = 1
+        for j in range(self.n):
+            if not self.state[i][j] == 0:
+                moves.append((i,j))
+        return moves
+    
+    def state_copy(self):
+        list1 = []
+        list2 = []
+        for x in self.state[0]:
+            list1.append(x)
+        for x in self.state[1]:
+            list2.append(x)
+        ret = []
+        ret.append(list1)
+        ret.append(list2)
+        return ret
+    
+    def __str__(self):
+        ret = ''
+        for x in self.state[0]:
+            ret = ret + str(x)
+        for x in self.state[1]:
+            ret = ret + str(x)
+        return ret
