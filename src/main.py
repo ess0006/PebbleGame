@@ -1,20 +1,21 @@
-'''
+"""
 Created on Nov 22, 2014
 
 @author: Eric Shaw
 @author: Michael Pritchard
-'''
+"""
 import Tkinter as tk
-from Tkinter import *
-import HumanPlayer as HumanPlayer
-import AIPlayer as AIPlayer
-import Game as Game
+import human as Human
+import ai as AI
+import game as Game
+
 
 class Main(tk.Tk):
-    '''
+    """
     Entry point.  This class builds each view.
     Adapted from http://stackoverflow.com/questions/7546050/python-tkinter-changing-the-window-basics
-    '''
+
+    """
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, None, None)
 
@@ -30,23 +31,23 @@ class Main(tk.Tk):
         for F in (Menu, GamePage):
             frame = F(container, self)
             self.frames[F] = frame
-            # put all of the pages in the same location; 
+            # put all of the pages in the same location;
             # the one on the top of the stacking order
             # will be the one that is visible.
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(Menu)
-        
+
     def show_frame(self, c):
-        '''
+        """
         Show a frame for the given class.
         @param c: The index of the frame to show.
-        '''
+        """
         frame = self.frames[c]
         frame.tkraise()
-        
+
     def show_frame_game(self, c, game_type, n, k):
-        '''
+        """
         Show a frame for the given class.
         @param c: The index of the frame to show.
         @param game_type: An int representing the types of players
@@ -55,17 +56,19 @@ class Main(tk.Tk):
                           2 - Human vs AI
         @param n: The number of columns per row.
         @param k: The number of pebbles per square.  
-        '''
+        """
         frame = self.frames[c]
         frame.set_game_type(game_type, n, k)
         frame.tkraise()
- 
-class Menu(tk.Frame):     
-    '''
+
+
+class Menu(tk.Frame):
+    """
     The menu view.
-    '''
-    #creating more constants than should be necessary because radio buttons will group if they have like values
-    #These are static - no support for multiple instances of Menu
+
+    """
+    # creating more constants than should be necessary because radio buttons will group if they have like values
+    # These are static - no support for multiple instances of Menu
     STEP = 0
     RUN = 1
     run_or_step = STEP
@@ -75,17 +78,18 @@ class Menu(tk.Frame):
     WEIGHTED_H2 = 4
     WEIGHTLESS_H2 = 5
     h2 = WEIGHTED_H2
-        
+
     def __init__(self, parent, controller):
-        '''
+        """
         Constructor
+
         @param parent: The parent view.
-        @param controller: The controller for the view. 
-        '''
-        
-        
+        @param controller: The controller for the view.
+
+        """
+
         tk.Frame.__init__(self, parent)
-        
+
         self.b1 = Button(root, text="2 Human", command=lambda: controller.show_frame_game(GamePage, 0, int(self.n_text_field.get()), int(self.k_text_field.get())))
         self.b1.pack()
         self.b2 = Button(root, text="2 AI", command=lambda: controller.show_frame_game(GamePage, 1, int(self.n_text_field.get()), int(self.k_text_field.get())))
@@ -102,42 +106,42 @@ class Menu(tk.Frame):
         self.n_label.pack()
         self.k_text_field = Entry(root)
         self.k_text_field.pack()
-        
+
         self.run_or_step_label = Label(root, text="Step or Run to end (AI only):")
         self.run_or_step_label.pack()
-        Menu.run_or_step = IntVar(master = root)
+        Menu.run_or_step = IntVar(master=root)
         Radiobutton(root, text="Step", variable=Menu.run_or_step, value=Menu.STEP).pack(anchor=W)
         Radiobutton(root, text="Run", variable=Menu.run_or_step, value=Menu.RUN).pack(anchor=W)
-        
+
         self.heuristic1_label = Label(root, text="Player 1 Heuristic (AI only):")
         self.heuristic1_label.pack()
-        Menu.h1 = IntVar(master = root)
+        Menu.h1 = IntVar(master=root)
         Radiobutton(root, text="Weighted", variable=Menu.h1, value=Menu.WEIGHTED_H1).pack(anchor=W)
         Radiobutton(root, text="Weightless", variable=Menu.h1, value=Menu.WEIGHTLESS_H1).pack(anchor=W)
-        
+
         self.heuristic2_label = Label(root, text="Player 2 Heuristic (AI only):")
         self.heuristic2_label.pack()
-        Menu.h2 = IntVar(master = root)
+        Menu.h2 = IntVar(master=root)
         Radiobutton(root, text="Weighted", variable=Menu.h2, value=Menu.WEIGHTED_H2).pack(anchor=W)
         Radiobutton(root, text="Weightless", variable=Menu.h2, value=Menu.WEIGHTLESS_H2).pack(anchor=W)
-        
-        
+
+
 
 
 class GamePage(tk.Frame):
-    '''
+    """
     The grid of squares.
-    '''
+    """
     def __init__(self, parent, controller):
-        '''
+        """
         Constructor
         @param parent: The parent view.
         @param controller: The controller for the view. 
-        '''
+        """
         tk.Frame.__init__(self, parent)
-    
+
     def set_game_type(self, game_type, n, k):
-        '''
+        """
         Sets the game type.
         @param game_type: An int representing the types of players
                           0 - Human vs Human
@@ -146,22 +150,22 @@ class GamePage(tk.Frame):
                           3 - AI vs Human (AI first)
         @param n: The number of columns per row.
         @param k: The number of pebbles per square.  
-        '''
+        """
         self.grid(row=4, column=k)
         if game_type == 0:
-            self.game = Game.Game(HumanPlayer.HumanPlayer(), HumanPlayer.HumanPlayer(), n, k)
+            self.game = Game.game(Human.human_player(), Human.human_player(), n, k)
         elif game_type == 1:
-            self.game = Game.Game(AIPlayer.AIPlayer(Menu.h1.get()), AIPlayer.AIPlayer(Menu.h2.get()), n, k)
+            self.game = Game.game(AI.ai_player(Menu.h1.get()), AI.ai_player(Menu.h2.get()), n, k)
         elif game_type == 2:
-            self.game = Game.Game(HumanPlayer.HumanPlayer(), AIPlayer.AIPlayer(Menu.h2.get()), n, k)
+            self.game = Game.game(Human.human_player(), AI.ai_player(Menu.h2.get()), n, k)
         else:
-            self.game = Game.Game(AIPlayer.AIPlayer(Menu.h1.get()), HumanPlayer.HumanPlayer(), n, k) 
+            self.game = Game.game(AI.ai_player(Menu.h1.get()), Human.human_player(), n, k)
         self.build_board()
-        
+
     def build_board(self):
-        '''
+        """
         Builds and displays the board GUI.
-        '''
+        """
         state = self.game.get_state()
         self.buttons = []
         self.buttons.append([])
@@ -169,48 +173,48 @@ class GamePage(tk.Frame):
         button = None
         for i in range(len(state)):
             for j in range(len(state[i])):
-                button = tk.Button(self, text=state[i][j], 
-                               command= lambda i=i,j=j: self.move(i, j))
+                button = tk.Button(self, text=state[i][j],
+                               command=lambda i=i, j=j: self.move(i, j))
                 button.grid(row=i, column=j)
                 self.buttons[i].append(button)
-                
+
         if self.game.has_ai():
             self.arrow = tk.Button(self, text=">", command=lambda: self.ai_move())
             if self.game.is_next_ai():
                 if Menu.run_or_step.get() == Menu.STEP:
-                    self.arrow.grid(row=3,columnspan=self.game.get_n())
-            
+                    self.arrow.grid(row=3, columnspan=self.game.get_n())
+
         self.turn_label = tk.Label(self, text="Turn:")
-        self.turn_label.grid(row=4,columnspan=self.game.get_n())
+        self.turn_label.grid(row=4, columnspan=self.game.get_n())
         self.player_label = tk.Label(self, text="Player 1")
-        self.player_label.grid(row=5,columnspan=self.game.get_n())
-        
+        self.player_label.grid(row=5, columnspan=self.game.get_n())
+
         if self.game.is_next_ai():
             if Menu.run_or_step.get() == Menu.RUN:
                     self.ai_move()
-        
-            
+
+
     def move(self, i, j):
-        '''
-        Submits a move to the Game instance.
+        """
+        Submits a move to the game instance.
         @param i: The i coordinate.
         @param j: The j coordinate. 
-        '''
-        if isinstance(self.game.next_to_move(), HumanPlayer.HumanPlayer):
-            if(self.game.valid_move(i,j)):
+        """
+        if isinstance(self.game.next_to_move(), Human.human_player):
+            if(self.game.valid_move(i, j)):
                 self.game.move(i, j)
             self.update_gui()
             if self.game.is_next_ai():
                 if Menu.run_or_step.get() == Menu.STEP:
-                    self.arrow.grid(row=3,columnspan=self.game.get_n())
+                    self.arrow.grid(row=3, columnspan=self.game.get_n())
                 else:
                     self.ai_move()
-    
+
     def ai_move(self):
-        '''
+        """
         Submits a move for the AI player.
-        '''
-        if isinstance(self.game.next_to_move(), AIPlayer.AIPlayer):
+        """
+        if isinstance(self.game.next_to_move(), AI.ai_player):
             self.game.ai_move()
             self.update_gui()
             if self.game.is_next_ai():
@@ -218,11 +222,11 @@ class GamePage(tk.Frame):
                     self.ai_move()
             else:
                 self.arrow.grid_forget()
-                
+
     def update_gui(self):
-        '''
+        """
         Updates the board GUI after a move.
-        '''
+        """
         state = self.game.get_state()
         for i in range(len(state)):
             for j in range(len(state[i])):
@@ -232,7 +236,7 @@ class GamePage(tk.Frame):
             self.player_label["text"] = "Player " + str(winner) + " wins!"
         else:
             self.player_label["text"] = "Player " + str(self.game.turn)
-        
+
 root = Tk()
 
 app = Main(root)

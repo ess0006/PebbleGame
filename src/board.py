@@ -9,13 +9,14 @@ Created on Nov 22, 2014
 class Board(object):
     """
     This class represents the 2 x k board.
-    """
 
+    """
     def __init__(self, n, k, state=None):
         """
         Constructor
         @param n: The number of columns in each of the 2 rows.
-        @param k: The number of pebbles in each square. 
+        @param k: The number of pebbles in each square.
+
         """
         if not isinstance(n, int):
             raise ValueError("Expected int param n, for 2 x n board.")
@@ -29,28 +30,32 @@ class Board(object):
     def get_state(self):
         """
         Returns the 2 x n board as an array of arrays.
+
         @return: The board as a 2 x n array of integers.
+
         """
         return self.state
 
     def reset(self):
-        """
-        Sets the board to its initial configuration.
-        """
+        """ Sets the board to its initial configuration. """
         self.state = self.get_initial_state()
 
     def get_initial_state(self):
         """
         Returns the initial configuration of the board as a 2 x n array of ints.
+
         @return: The initial configuration.
+
         """
         return [[self.k for x in range(self.n)] for x in range(2)]
 
     def select_square(self, i, j):
         """
         Selects the square at location i,j for a turn, redistributing pebbles.
+
         @param i: The i coordinate of the square.
-        @param j: The j coordinate of the square.  
+        @param j: The j coordinate of the square.
+
         """
         if not isinstance(i, int) or not isinstance(j, int):
             raise ValueError("Expected int params i and j, indices of the position on the board.")
@@ -67,7 +72,7 @@ class Board(object):
 
     def set_item(self, i, j, val):
         self.state[i][j] = val
-    
+
     def _rotate_ccw(self, i, j):
         """
         Given coordinates, returns next coordinate in a counter-clockwise direction.
@@ -123,7 +128,7 @@ class Board(object):
         for x in array:
             total = total + x
         return total
-    
+
     def legal_moves(self, turn):
         moves = []
         i = 0
@@ -133,9 +138,9 @@ class Board(object):
             i = 1
         for j in range(self.n):
             if not self.state[i][j] == 0:
-                moves.append((i,j))
+                moves.append((i, j))
         return moves
-    
+
     def state_copy(self):
         list1 = []
         list2 = []
@@ -147,7 +152,7 @@ class Board(object):
         ret.append(list1)
         ret.append(list2)
         return ret
-    
+
     def __str__(self):
         ret = ''
         for x in self.state[0]:

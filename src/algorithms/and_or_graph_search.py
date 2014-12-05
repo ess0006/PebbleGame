@@ -5,7 +5,7 @@ Created on Dec 2, 2014
 @author: Eric Shaw
 """
 from algorithms.algorithm import Algorithm
-from Board import Board
+import board.Board
 
 
 class AndOrGraphSearch(Algorithm):
@@ -15,20 +15,25 @@ class AndOrGraphSearch(Algorithm):
     (top or bottom).
 
     """
-    def __init__(self, player_row=None, rows=2, row_buckets=2, tile_pebbles=2):
+    def __init__(self, heuristic_id, plies, rows=2,
+                 row_buckets=2, tile_pebbles=2):
         """
         Constructor
 
-        @param: player_row
+        @param heuristic_id: An int representing the heuristic and player
+                     utilizing it. Constants for these are defined in
+                     the Menu class in main.py. 2 and 4 are weighted,
+                     3 and 5 are weightless.
+        @param: plies
         @param: rows
         @param: row_buckets
         @param: tile_pebbles
 
         """
-        super(AndOrGraphSearch, self).__init__(player_row, rows,
+        super(AndOrGraphSearch, self).__init__(heuristic_id, plies, rows,
                                                row_buckets, tile_pebbles)
 
-        self.board = Board(rows, row_buckets, tile_pebbles)
+        self.board = board(rows, row_buckets, tile_pebbles)
         self.plan = {}
 
     def generate_plan(self):
