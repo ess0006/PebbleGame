@@ -5,8 +5,9 @@ Created on Nov 22, 2014
 @author: Michael Pritchard
 """
 import Tkinter as tk
-import human as Human
-import ai as AI
+from Tkinter import *
+import players.human as Human
+import players.ai as AI
 import game as Game
 
 
@@ -46,7 +47,7 @@ class Main(tk.Tk):
         frame = self.frames[c]
         frame.tkraise()
 
-    def show_frame_game(self, c, game_type, n, k):
+    def show_frame_game(self, c, game_type, n, k, plies=0):
         """
         Show a frame for the given class.
         @param c: The index of the frame to show.
@@ -58,7 +59,7 @@ class Main(tk.Tk):
         @param k: The number of pebbles per square.  
         """
         frame = self.frames[c]
-        frame.set_game_type(game_type, n, k)
+        frame.set_game_type(game_type, n, k, plies)
         frame.tkraise()
 
 
@@ -78,6 +79,14 @@ class Menu(tk.Frame):
     WEIGHTED_H2 = 4
     WEIGHTLESS_H2 = 5
     h2 = WEIGHTED_H2
+    
+    MINIMAX1 = 6
+    ANDOR1 = 7
+    alg1 = MINIMAX1
+    MINIMAX2 = 8
+    ANDOR2 = 9
+    alg2 = MINIMAX2
+    
 
     def __init__(self, parent, controller):
         """
@@ -92,20 +101,24 @@ class Menu(tk.Frame):
 
         self.b1 = Button(root, text="2 Human", command=lambda: controller.show_frame_game(GamePage, 0, int(self.n_text_field.get()), int(self.k_text_field.get())))
         self.b1.pack()
-        self.b2 = Button(root, text="2 AI", command=lambda: controller.show_frame_game(GamePage, 1, int(self.n_text_field.get()), int(self.k_text_field.get())))
+        self.b2 = Button(root, text="2 AI", command=lambda: controller.show_frame_game(GamePage, 1, int(self.n_text_field.get()), int(self.k_text_field.get()), int(self.plies_text_field.get())))
         self.b2.pack()
-        self.b3 = Button(root, text="1 Human, 1 AI", command=lambda: controller.show_frame_game(GamePage, 2, int(self.n_text_field.get()), int(self.k_text_field.get())))
+        self.b3 = Button(root, text="1 Human, 1 AI", command=lambda: controller.show_frame_game(GamePage, 2, int(self.n_text_field.get()), int(self.k_text_field.get()), int(self.plies_text_field.get())))
         self.b3.pack()
-        self.b3 = Button(root, text="1 AI, 1 Human", command=lambda: controller.show_frame_game(GamePage, 3, int(self.n_text_field.get()), int(self.k_text_field.get())))
+        self.b3 = Button(root, text="1 AI, 1 Human", command=lambda: controller.show_frame_game(GamePage, 3, int(self.n_text_field.get()), int(self.k_text_field.get()), int(self.plies_text_field.get())))
         self.b3.pack()
         self.n_label = Label(root, text="Num squares per side:")
         self.n_label.pack()
         self.n_text_field = Entry(root)
         self.n_text_field.pack()
-        self.n_label = Label(root, text="Num pebbles per square:")
-        self.n_label.pack()
+        self.k_label = Label(root, text="Num pebbles per square:")
+        self.k_label.pack()
         self.k_text_field = Entry(root)
         self.k_text_field.pack()
+        self.plies_label = Label(root, text="Num plies (AI only):")
+        self.plies_label.pack()
+        self.plies_text_field = Entry(root)
+        self.plies_text_field.pack()
 
         self.run_or_step_label = Label(root, text="Step or Run to end (AI only):")
         self.run_or_step_label.pack()
@@ -118,6 +131,12 @@ class Menu(tk.Frame):
         Menu.h1 = IntVar(master=root)
         Radiobutton(root, text="Weighted", variable=Menu.h1, value=Menu.WEIGHTED_H1).pack(anchor=W)
         Radiobutton(root, text="Weightless", variable=Menu.h1, value=Menu.WEIGHTLESS_H1).pack(anchor=W)
+        
+        self.algorithm1_label = Label(root, text="Player 1 Algorithm (AI only):")
+        self.algorithm1_label.pack()
+        Menu.alg1 = IntVar(master=root)
+        Radiobutton(root, text="Alpha-Beta Minimax", variable=Menu.alg1, value=Menu.MINIMAX1).pack(anchor=W)
+        Radiobutton(root, text="And-Or Graph Search", variable=Menu.alg1, value=Menu.ANDOR1).pack(anchor=W)
 
         self.heuristic2_label = Label(root, text="Player 2 Heuristic (AI only):")
         self.heuristic2_label.pack()
@@ -125,7 +144,11 @@ class Menu(tk.Frame):
         Radiobutton(root, text="Weighted", variable=Menu.h2, value=Menu.WEIGHTED_H2).pack(anchor=W)
         Radiobutton(root, text="Weightless", variable=Menu.h2, value=Menu.WEIGHTLESS_H2).pack(anchor=W)
 
-
+        self.algorithm2_label = Label(root, text="Player 2 Algorithm (AI only):")
+        self.algorithm2_label.pack()
+        Menu.alg2 = IntVar(master=root)
+        Radiobutton(root, text="Alpha-Beta Minimax", variable=Menu.alg2, value=Menu.MINIMAX2).pack(anchor=W)
+        Radiobutton(root, text="And-Or Graph Search", variable=Menu.alg2, value=Menu.ANDOR2).pack(anchor=W)
 
 
 class GamePage(tk.Frame):
@@ -140,7 +163,7 @@ class GamePage(tk.Frame):
         """
         tk.Frame.__init__(self, parent)
 
-    def set_game_type(self, game_type, n, k):
+    def set_game_type(self, game_type, n, k, plies = 0):
         """
         Sets the game type.
         @param game_type: An int representing the types of players
@@ -153,13 +176,13 @@ class GamePage(tk.Frame):
         """
         self.grid(row=4, column=k)
         if game_type == 0:
-            self.game = Game.game(Human.human_player(), Human.human_player(), n, k)
+            self.game = Game.Game(Human.Human(), Human.Human(), n, k)
         elif game_type == 1:
-            self.game = Game.game(AI.ai_player(Menu.h1.get()), AI.ai_player(Menu.h2.get()), n, k)
+            self.game = Game.Game(AI.AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), AI.AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
         elif game_type == 2:
-            self.game = Game.game(Human.human_player(), AI.ai_player(Menu.h2.get()), n, k)
+            self.game = Game.Game(Human.Human(), AI.AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
         else:
-            self.game = Game.game(AI.ai_player(Menu.h1.get()), Human.human_player(), n, k)
+            self.game = Game.Game(AI.AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), Human.Human(), n, k)
         self.build_board()
 
     def build_board(self):
@@ -200,7 +223,7 @@ class GamePage(tk.Frame):
         @param i: The i coordinate.
         @param j: The j coordinate. 
         """
-        if isinstance(self.game.next_to_move(), Human.human_player):
+        if isinstance(self.game.next_to_move(), Human.Human):
             if(self.game.valid_move(i, j)):
                 self.game.move(i, j)
             self.update_gui()
@@ -214,7 +237,7 @@ class GamePage(tk.Frame):
         """
         Submits a move for the AI player.
         """
-        if isinstance(self.game.next_to_move(), AI.ai_player):
+        if isinstance(self.game.next_to_move(), AI.AI):
             self.game.ai_move()
             self.update_gui()
             if self.game.is_next_ai():

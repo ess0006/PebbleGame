@@ -4,8 +4,8 @@ Created on Nov 24, 2014
 @author: Eric
 '''
 import unittest
-import src.Game as Game
-import src.HumanPlayer as HumanPlayer
+import src.game as Game
+import src.players.human as HumanPlayer
 
 class GameTest(unittest.TestCase):
     '''

@@ -5,8 +5,8 @@ Created on Nov 22, 2014
 """
 
 import board as Board
-import Player as Player
-import ai as AI
+import players.player as Player
+import players.ai as AI
 import Tkinter
 from Tkinter import *
 
@@ -30,7 +30,7 @@ class Game(object):
         self.k = k
         self.player1 = player1
         self.player2 = player2
-        self.board = Board.board(n, k)
+        self.board = Board.Board(n, k)
         self.turn = 1
 
     def get_state(self):
@@ -59,14 +59,14 @@ class Game(object):
         Determines if both players are computers.
         @return: True if both players are AI players, False otherwise.
         """
-        return isinstance(self.player1, AI.ai_player) and isinstance(self.player2, AI.ai_player)
+        return isinstance(self.player1, AI.AI) and isinstance(self.player2, AI.AI)
 
     def has_ai(self):
         """
         Determines if one player is a computer.
         @return: True if either player is a computer, False if both are human players.
         """
-        return isinstance(self.player1, AI.ai_player) or isinstance(self.player2, AI.ai_player)
+        return isinstance(self.player1, AI.AI) or isinstance(self.player2, AI.AI)
 
     def get_turn(self):
         """
@@ -108,7 +108,7 @@ class Game(object):
         Determines if the next player to move is an AI player.
         @return: True if the next player to move is an AI player, False otherwise.
         """
-        return isinstance(self.next_to_move(), AI.ai_player)
+        return isinstance(self.next_to_move(), AI.AI)
 
     def ai_move(self):
         """

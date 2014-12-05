@@ -4,7 +4,7 @@ Created on Nov 22, 2014
 @author: Eric
 '''
 import unittest
-import src.Board as Board
+import src.board as Board
 
 class Test(unittest.TestCase):
 
