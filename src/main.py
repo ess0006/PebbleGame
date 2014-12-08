@@ -242,11 +242,13 @@ class GamePage(tk.Frame):
         if isinstance(self.game.next_to_move(), AI):
             self.game.ai_move()
             self.update_gui()
-            if self.game.is_next_ai():
-                if Menu.run_or_step.get() == Menu.RUN:
-                    self.ai_move()
-            else:
-                self.arrow.grid_forget()
+            winner = self.game.winner()
+            if winner == 0: 
+                if self.game.is_next_ai():
+                    if Menu.run_or_step.get() == Menu.RUN:
+                        self.ai_move()
+                else:
+                    self.arrow.grid_forget()
 
     def update_gui(self):
         """
@@ -258,7 +260,8 @@ class GamePage(tk.Frame):
                 self.buttons[i][j]["text"] = state[i][j]
         winner = self.game.winner()
         if winner != 0:
-            self.player_label["text"] = "Player " + str(winner) + " wins!"
+            self.player_label["text"] = "Player " + str(winner + 1) + " wins!"
+            self.arrow.grid_forget()
         else:
             self.player_label["text"] = "Player " + str(self.game.turn)
 

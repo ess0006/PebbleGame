@@ -118,7 +118,7 @@ class Game(object):
         else:
             raise RuntimeError("game.Game: The AI didn't make a move!")
 
-        self.board.select_square(move[0], move[1])
+        self.board = self.board.select_square(move[0], move[1])
         self.update_turn()
 
     def valid_move(self, i, j):
