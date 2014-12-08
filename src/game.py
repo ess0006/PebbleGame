@@ -29,6 +29,7 @@ class Game(object):
         self.player2 = player2
         self.board = Board.Board(n, k)
         self.turn = 1
+        self.turns = 0
 
     def get_state(self):
         """
@@ -76,6 +77,7 @@ class Game(object):
         """
         Advances to the next turn.
         """
+        self.turns = self.turns + 1
         if self.turn == 1:
             self.turn = 2
         else:
@@ -135,6 +137,9 @@ class Game(object):
         if self.board.get_state()[i][j] == 0:
             return False
         return True
+
+    def get_turns(self):
+        return self.turns
 
     def winner(self):
         """
