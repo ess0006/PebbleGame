@@ -5,9 +5,9 @@ Created on Nov 22, 2014
 @author: Michael Pritchard
 
 """
-from src.algorithms.algorithm import *
-from src.main import Menu
-from player import Player
+from players.player import Player
+from algorithms.and_or_graph_search import AndOrGraphSearch
+from algorithms.alpha_beta_minimax import AlphaBetaMinimax
 
 
 class AI(Player):
@@ -15,15 +15,12 @@ class AI(Player):
     This class represents a computer player.
 
     """
-    def __init__(self, alrgorithm_id, heuristic_id, plies, rows,
+    def __init__(self, algorithm_id, heuristic_id, plies, rows,
                  row_buckets, tile_pebbles):
         """ Constructor """
-        if heuristic_id == Menu.MINIMAX1 or heuristic_id == Menu.MINIMAX2:
-            self.algorithm = alpha_beta_minimax.AlphaBetaMinimax(heuristic_id, plies, rows,
-                 row_buckets, tile_pebbles)
-        else:
-            self.algorithm = and_or_graph_search.AndOrGraphSearch(heuristic_id, plies, rows,
-                 row_buckets, tile_pebbles)
+        Algorithm = AndOrGraphSearch if algorithm_id % 2 else AlphaBetaMinimax
+        self.algorithm = Algorithm(heuristic_id, plies, rows,
+                                   row_buckets, tile_pebbles)
 
     def request_move(self, board):
         """
@@ -32,5 +29,4 @@ class AI(Player):
         @return: The i,j coordinates of the move.
 
         """
-        # GUI will get move
         return self.algorithm.decide_move(board)

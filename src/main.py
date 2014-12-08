@@ -3,12 +3,16 @@ Created on Nov 22, 2014
 
 @author: Eric Shaw
 @author: Michael Pritchard
+
 """
 import Tkinter as tk
 from Tkinter import *
-import players.human as Human
-import players.ai as AI
-import game as Game
+
+# from Tkinter import Button, Label, Entry, IntVar, Radiobutton, W
+
+from game import Game
+from players.ai import AI
+from players.human import Human
 
 
 class Main(tk.Tk):
@@ -79,14 +83,13 @@ class Menu(tk.Frame):
     WEIGHTED_H2 = 4
     WEIGHTLESS_H2 = 5
     h2 = WEIGHTED_H2
-    
+
     MINIMAX1 = 6
     ANDOR1 = 7
     alg1 = MINIMAX1
     MINIMAX2 = 8
     ANDOR2 = 9
     alg2 = MINIMAX2
-    
 
     def __init__(self, parent, controller):
         """
@@ -131,7 +134,7 @@ class Menu(tk.Frame):
         Menu.h1 = IntVar(master=root)
         Radiobutton(root, text="Weighted", variable=Menu.h1, value=Menu.WEIGHTED_H1).pack(anchor=W)
         Radiobutton(root, text="Weightless", variable=Menu.h1, value=Menu.WEIGHTLESS_H1).pack(anchor=W)
-        
+
         self.algorithm1_label = Label(root, text="Player 1 Algorithm (AI only):")
         self.algorithm1_label.pack()
         Menu.alg1 = IntVar(master=root)
@@ -163,7 +166,7 @@ class GamePage(tk.Frame):
         """
         tk.Frame.__init__(self, parent)
 
-    def set_game_type(self, game_type, n, k, plies = 0):
+    def set_game_type(self, game_type, n, k, plies=0):
         """
         Sets the game type.
         @param game_type: An int representing the types of players
@@ -176,13 +179,13 @@ class GamePage(tk.Frame):
         """
         self.grid(row=4, column=k)
         if game_type == 0:
-            self.game = Game.Game(Human.Human(), Human.Human(), n, k)
+            self.game = Game(Human(), Human(), n, k)
         elif game_type == 1:
-            self.game = Game.Game(AI.AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), AI.AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
+            self.game = Game(AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
         elif game_type == 2:
-            self.game = Game.Game(Human.Human(), AI.AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
+            self.game = Game(Human(), AI(Menu.alg2.get(), Menu.h2.get(), plies, 2, n, k), n, k)
         else:
-            self.game = Game.Game(AI.AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), Human.Human(), n, k)
+            self.game = Game(AI(Menu.alg1.get(), Menu.h1.get(), plies, 2, n, k), Human(), n, k)
         self.build_board()
 
     def build_board(self):
@@ -216,14 +219,13 @@ class GamePage(tk.Frame):
             if Menu.run_or_step.get() == Menu.RUN:
                     self.ai_move()
 
-
     def move(self, i, j):
         """
         Submits a move to the game instance.
         @param i: The i coordinate.
-        @param j: The j coordinate. 
+        @param j: The j coordinate.
         """
-        if isinstance(self.game.next_to_move(), Human.Human):
+        if isinstance(self.game.next_to_move(), Human):
             if(self.game.valid_move(i, j)):
                 self.game.move(i, j)
             self.update_gui()
@@ -237,7 +239,7 @@ class GamePage(tk.Frame):
         """
         Submits a move for the AI player.
         """
-        if isinstance(self.game.next_to_move(), AI.AI):
+        if isinstance(self.game.next_to_move(), AI):
             self.game.ai_move()
             self.update_gui()
             if self.game.is_next_ai():
@@ -260,7 +262,7 @@ class GamePage(tk.Frame):
         else:
             self.player_label["text"] = "Player " + str(self.game.turn)
 
-root = Tk()
+root = tk.Tk()
 
 app = Main(root)
 

@@ -5,8 +5,8 @@ Created on Nov 22, 2014
 @author: Eric Shaw
 
 """
-from heuristics.weightless import Weightless as Weightless
-from heuristics.weighted import Weighted as Weighted
+from heuristics.weightless import Weightless
+from heuristics.weighted import Weighted
 
 
 class Algorithm(object):
@@ -40,10 +40,10 @@ class Algorithm(object):
         self._validate_tile_pebbles(tile_pebbles)
 
         # Derive the player_row and heuristic from the heuristic_id
-        player_row = (heuristic_id / 2) - 1
+        self.player_row = (heuristic_id / 2) - 1
         Heuristic = Weightless if heuristic_id % 2 else Weighted
 
-        self.heuristic = Heuristic(player_row, rows,
+        self.heuristic = Heuristic(self.player_row, rows,
                                    row_buckets, tile_pebbles)
         self.plies = plies
 
@@ -59,9 +59,9 @@ class Algorithm(object):
         if not isinstance(plies, int):
             raise TypeError("algorithm.Algorithm: expected <type \'int\'> " +
                             "for \'plies\', found " + str(type(plies)))
-        if plies < 1:
+        if plies < 2 or plies % 2:
             raise ValueError("algorithm.Algorithm: \'plies\' must have"
-                             + " a positive nonzero value.")
+                             + " a positive, even value.")
 
     def _validate_rows(self, rows):
         """ Performs type and value checking for the rows parameter """

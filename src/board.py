@@ -25,7 +25,14 @@ class Board(object):
         self.n = n
         self.k = k
         self.state = state if state is not None else self.get_initial_state()
-        pass
+
+    def __str__(self):
+        ret = ''
+        for x in self.state[0]:
+            ret = ret + str(x)
+        for x in self.state[1]:
+            ret = ret + str(x)
+        return ret
 
     def get_state(self):
         """
@@ -129,16 +136,11 @@ class Board(object):
             total = total + x
         return total
 
-    def legal_moves(self, turn):
+    def legal_moves(self, row):
         moves = []
-        i = 0
-        if(turn == 1):
-            i = 0
-        else:
-            i = 1
         for j in range(self.n):
-            if not self.state[i][j] == 0:
-                moves.append((i, j))
+            if not self.state[row][j] == 0:
+                moves.append((row, j))
         return moves
 
     def state_copy(self):
@@ -153,10 +155,9 @@ class Board(object):
         ret.append(list2)
         return ret
 
-    def __str__(self):
-        ret = ''
-        for x in self.state[0]:
-            ret = ret + str(x)
-        for x in self.state[1]:
-            ret = ret + str(x)
-        return ret
+    def get_possible_states(self, row):
+        states = []
+        moves = self.legal_moves(row)
+        for move in moves:
+            states.append(self.select_square(move[0], move[1]))
+        return states

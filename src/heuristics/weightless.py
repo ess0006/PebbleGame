@@ -34,7 +34,7 @@ class Weightless(Heuristic):
         """
         # Execute the __init__ method of the parent class, Heuristic.
         super(Weightless, self).__init__(player_row, rows,
-                                                  row_buckets, tile_pebbles)
+                                         row_buckets, tile_pebbles)
         self.initial_value = self._calculate_initial_value()
 
     def _calculate_initial_value(self):

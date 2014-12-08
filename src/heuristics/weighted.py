@@ -49,7 +49,7 @@ class Weighted(Heuristic):
         """
         # Execute the __init__ method of the parent class, Heuristic.
         super(Weighted, self).__init__(player_row, rows,
-                                                row_buckets, tile_pebbles)
+                                       row_buckets, tile_pebbles)
 
     def evaluate_board_state(self, board_state):
         """
@@ -69,7 +69,7 @@ class Weighted(Heuristic):
         bot_value = sum(map(mul, tiles, weights))
 
         # Repeat the above procedure for the top tiles.
-        weights = reversed(weights)
+        weights.reverse()
         tiles = [tile for tile in board_state[0]]
         top_value = sum(map(mul, tiles, weights))
 

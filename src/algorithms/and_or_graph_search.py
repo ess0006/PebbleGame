@@ -3,9 +3,13 @@ Created on Dec 2, 2014
 
 @author: Michael Pritchard
 @author: Eric Shaw
+
 """
+import math
+
 from algorithms.algorithm import Algorithm
-import board.Board
+from board import Board
+from src.node import Node
 
 
 class AndOrGraphSearch(Algorithm):
@@ -33,22 +37,44 @@ class AndOrGraphSearch(Algorithm):
         super(AndOrGraphSearch, self).__init__(heuristic_id, plies, rows,
                                                row_buckets, tile_pebbles)
 
-        self.board = board(rows, row_buckets, tile_pebbles)
-        self.plan = {}
+        self.board = Board(rows, row_buckets, tile_pebbles)
+        self.game_tree = Node()
 
-    def generate_plan(self):
-        """ Generates a conditional plan based on the current board state. """
-        pass
+    def build_tree(self, node, depth, path=[]):
+        child_values = []
 
-    def or_search(self, board, path):
-        if board.victory(self.player_row):
-            return path
-        if board.get_state in path:
-            return None
-        # move should be a set of coordinates
-        for move in board.legal_moves(self.player_row):
-            
-        return None
+        # Check for loops
+        board = node.get_board()
+        looping = str(board) in path
 
-    def and_search(self, path):
-        pass
+        if not looping and depth < self.plies and not board.is_game_over():
+            # Add the current node to the path
+            path.append(str(board))
+
+            for child in board.get_possible_states(depth % 2):
+                child_node = Node(child)
+                node.add_child(child_node)
+                child_values.append(self.build_tree(child_node, depth + 1,
+                                                    path))
+            node.set_value(math.ceil(sum([(1.0 / len(child_values)) * child
+                                          for child in child_values])))
+        else:
+            node.set_value(self.heuristic.evaluate_board_state(node.get_board().get_state()))
+
+        return node.get_value()
+
+    def decide_move(self, board):
+        """
+        Determines the next move that the player should make.
+
+        @return: a tuple with the coordinates of the next move.
+
+        """
+        self.game_tree = Node(board)
+        self.build_tree(self.game_tree, 0)
+        moves = [move for move in self.game_tree.get_board().legal_moves(self.player_row)]
+        values = [node.get_value() for node in self.game_tree.get_children()]
+
+        return moves[values.index((max(values)))]
+
+

@@ -3,28 +3,25 @@ Created on Nov 22, 2014
 
 @author: Eric
 """
-
 import board as Board
-import players.player as Player
-import players.ai as AI
-import Tkinter
-from Tkinter import *
+
+from players.ai import AI
+from players.player import Player
+
 
 class Game(object):
     """
     This class manages the playing of the pebble game.
     """
-
-
     def __init__(self, player1, player2, n, k):
         """
         Constructor
         @param player1: The first player.
         @param player2: The second player.
         @param n: The number of columns in each row.
-        @param k: The number of pebbles in each square.  
+        @param k: The number of pebbles in each square.
         """
-        if not isinstance(player1, Player.Player) or not isinstance(player2, Player.Player):
+        if not isinstance(player1, Player) or not isinstance(player2, Player):
             raise ValueError("Players should be passed as parameters")
         self.n = n
         self.k = k
@@ -59,14 +56,14 @@ class Game(object):
         Determines if both players are computers.
         @return: True if both players are AI players, False otherwise.
         """
-        return isinstance(self.player1, AI.AI) and isinstance(self.player2, AI.AI)
+        return isinstance(self.player1, AI) and isinstance(self.player2, AI)
 
     def has_ai(self):
         """
         Determines if one player is a computer.
         @return: True if either player is a computer, False if both are human players.
         """
-        return isinstance(self.player1, AI.AI) or isinstance(self.player2, AI.AI)
+        return isinstance(self.player1, AI) or isinstance(self.player2, AI)
 
     def get_turn(self):
         """
@@ -108,18 +105,20 @@ class Game(object):
         Determines if the next player to move is an AI player.
         @return: True if the next player to move is an AI player, False otherwise.
         """
-        return isinstance(self.next_to_move(), AI.AI)
+        return isinstance(self.next_to_move(), AI)
 
     def ai_move(self):
         """
         Determines and makes a move based on heuristic.
         """
-        # TODO get i and j from algorithm, and replace the next 4 lines
-        if(self.turn == 1):
-            i, j = 0, 0
+        if self.turn == 1 and isinstance(self.player1, AI):
+            move = self.player1.request_move(self.board)
+        elif self.turn == 2 and isinstance(self.player2, AI):
+            move = self.player2.request_move(self.board)
         else:
-            i, j = 1, 0
-        self.board.select_square(i, j)
+            raise RuntimeError("game.Game: The AI didn't make a move!")
+
+        self.board.select_square(move[0], move[1])
         self.update_turn()
 
     def valid_move(self, i, j):
