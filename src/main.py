@@ -165,6 +165,7 @@ class GamePage(tk.Frame):
         @param controller: The controller for the view. 
         """
         tk.Frame.__init__(self, parent)
+        self.TURN_LIMIT = 250
 
     def set_game_type(self, game_type, n, k, plies=0):
         """
@@ -239,14 +240,18 @@ class GamePage(tk.Frame):
         """
         Submits a move for the AI player.
         """
+        if self.game.get_turns() > self.TURN_LIMIT:
+            self.player_label["text"] = "Turn Limit Exceeded!"
         if isinstance(self.game.next_to_move(), AI):
             self.game.ai_move()
             self.update_gui()
-            if self.game.is_next_ai():
-                if Menu.run_or_step.get() == Menu.RUN:
-                    self.ai_move()
-            else:
-                self.arrow.grid_forget()
+            winner = self.game.winner()
+            if winner == 0: 
+                if self.game.is_next_ai():
+                    if Menu.run_or_step.get() == Menu.RUN:
+                        self.ai_move()
+                else:
+                    self.arrow.grid_forget()
 
     def update_gui(self):
         """
@@ -258,7 +263,8 @@ class GamePage(tk.Frame):
                 self.buttons[i][j]["text"] = state[i][j]
         winner = self.game.winner()
         if winner != 0:
-            self.player_label["text"] = "Player " + str(winner) + " wins!"
+            self.player_label["text"] = "Player " + str(winner + 1) + " wins!"
+            self.arrow.grid_forget()
         else:
             self.player_label["text"] = "Player " + str(self.game.turn)
 
