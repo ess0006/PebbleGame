@@ -139,6 +139,10 @@ class Game(object):
         return True
 
     def get_turns(self):
+        """
+        Returns an int representing the number of turns that have been played so far.
+        @return the number of turns that have been played so far.
+        """
         return self.turns
 
     def winner(self):

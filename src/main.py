@@ -59,6 +59,7 @@ class Main(tk.Tk):
                           0 - Human vs Human
                           1 - AI vs AI
                           2 - Human vs AI
+                          3 - AI vs Human
         @param n: The number of columns per row.
         @param k: The number of pebbles per square.  
         """
@@ -69,7 +70,7 @@ class Main(tk.Tk):
 
 class Menu(tk.Frame):
     """
-    The menu view.
+    The menu GUI.
 
     """
     # creating more constants than should be necessary because radio buttons will group if they have like values
@@ -263,7 +264,7 @@ class GamePage(tk.Frame):
                 self.buttons[i][j]["text"] = state[i][j]
         winner = self.game.winner()
         if winner != 0:
-            self.player_label["text"] = "Player " + str(winner + 1) + " wins!"
+            self.player_label["text"] = "Player " + str(winner) + " wins!"
             self.arrow.grid_forget()
         else:
             self.player_label["text"] = "Player " + str(self.game.turn)

@@ -8,7 +8,7 @@ Created on Nov 22, 2014
 
 class Board(object):
     """
-    This class represents the 2 x k board.
+    This class represents the 2 x n board, with k pebbles in each square.
 
     """
     def __init__(self, n, k, state=None):
@@ -27,6 +27,10 @@ class Board(object):
         self.state = state if state is not None else self.get_initial_state()
 
     def __str__(self):
+        """
+        Returns a string representation of the object.
+        @return a string representation of the object.
+        """
         ret = ''
         for x in self.state[0]:
             ret = ret + str(x)
@@ -137,6 +141,11 @@ class Board(object):
         return total
 
     def legal_moves(self, row):
+        """
+        Returns a list of all legal moves as (i,j) tuples.
+        @param row: The row for which the list of legal moves is requested.
+        @return: A list of all legal moves as (i, j) tuples. 
+        """
         moves = []
         for j in range(self.n):
             if not self.state[row][j] == 0:
@@ -144,6 +153,10 @@ class Board(object):
         return moves
 
     def state_copy(self):
+        """
+        Makes a copy of the 2 x n state array.
+        @return a copy of the 2 x n state array.
+        """
         list1 = []
         list2 = []
         for x in self.state[0]:
@@ -156,6 +169,11 @@ class Board(object):
         return ret
 
     def get_possible_states(self, row):
+        """
+        Gets all possible next states given a row.
+        @param row: the row number for which the possible states list is requested. 
+        @return the list of all possible next states for the row.
+        """
         states = []
         moves = self.legal_moves(row)
         for move in moves:
