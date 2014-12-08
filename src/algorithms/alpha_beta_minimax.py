@@ -42,6 +42,10 @@ class AlphaBetaMinimax(Algorithm):
         moves = [move for move in board.legal_moves(self.player_row)]
         states = [state for state in board.get_possible_states(self.player_row)]
 
+        if self.player_row:
+            moves.reverse()
+            states.reverse()
+
         for state, move in zip(states, moves):
             new_value = self.min(state, alpha, beta, 1, path)
             if new_value > value:
@@ -65,7 +69,10 @@ class AlphaBetaMinimax(Algorithm):
             # Add the board state to the path
             path.append(str(board))
 
-            for state in board.get_possible_states(depth % 2):
+            states = [state for state in board.get_possible_states(depth % 2)]
+            if not (depth + self.player_row) % 2:
+                states.reverse()
+            for state in states:
                 if str(state) in self.transposition_table:
                     new_value = self.transposition_table[str(state)]
                 else:
@@ -94,7 +101,10 @@ class AlphaBetaMinimax(Algorithm):
             # Add the board state to the path
             path.append(str(board))
 
-            for state in board.get_possible_states(depth % 2):
+            states = [state for state in board.get_possible_states(depth % 2)]
+            if not (depth + self.player_row) % 2:
+                states.reverse()
+            for state in states:
                 if str(state) in self.transposition_table:
                     new_value = self.transposition_table[str(state)]
                 else:

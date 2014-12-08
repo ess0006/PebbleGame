@@ -40,7 +40,7 @@ class AndOrGraphSearch(Algorithm):
         self.board = Board(rows, row_buckets, tile_pebbles)
         self.game_tree = Node()
 
-    def build_tree(self, node, depth, path=[]):
+    def build_tree(self, node, depth, path):
         child_values = []
 
         # Check for loops
@@ -71,7 +71,7 @@ class AndOrGraphSearch(Algorithm):
 
         """
         self.game_tree = Node(board)
-        self.build_tree(self.game_tree, 0)
+        self.build_tree(self.game_tree, 0, [])
         moves = [move for move in self.game_tree.get_board().legal_moves(self.player_row)]
         values = [node.get_value() for node in self.game_tree.get_children()]
 
